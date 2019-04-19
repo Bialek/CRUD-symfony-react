@@ -4,14 +4,16 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
- * @ORM\Entity(repositoryClass="App\Repository\BlogPostRepository")
  * @ApiResource(
  *      itemOperations={"get"},
  *      collectionOperations={"get"}
  * )
+ * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
-class BlogPost
+class Comment
 {
     /**
      * @ORM\Id()
@@ -19,69 +21,29 @@ class BlogPost
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $published;
-
     /**
      * @ORM\Column(type="text")
      */
     private $content;
-
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
+     * @ORM\Column(type="datetime")
+     */
+    private $published;
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $slug;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="blogPost")
-     */
-    private $comments;
-
-    public function __construct() 
-    {
-        $this->comments = new ArrayCollection();
-    }
-
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
+    private $blogPost;
 
     public function getId()
     {
         return $this->id;
-    }
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-        return $this;
-    }
-    public function getPublished(): ?\DateTimeInterface
-    {
-        return $this->published;
-    }
-    public function setPublished(\DateTimeInterface $published): self
-    {
-        $this->published = $published;
-        return $this;
     }
     public function getContent(): ?string
     {
@@ -92,13 +54,14 @@ class BlogPost
         $this->content = $content;
         return $this;
     }
-    public function getSlug(): ?string
+    public function getPublished(): ?\DateTimeInterface
     {
-        return $this->slug;
+        return $this->published;
     }
-    public function setSlug($slug): void
+    public function setPublished(\DateTimeInterface $published): self
     {
-        $this->slug = $slug;
+        $this->published = $published;
+        return $this;
     }
     /**
      * @return User
@@ -113,6 +76,17 @@ class BlogPost
     public function setAuthor(User $author): self
     {
         $this->author = $author;
+        return $this;
+    }
+
+    public function getBlogPost(): BlogPost 
+    {   
+        return $this->blogPost;
+    }
+
+    public function setBlogPost(BlogPost $blogPost): self 
+    {
+        $this->blogPost = $blogPost;
         return $this;
     }
 }
