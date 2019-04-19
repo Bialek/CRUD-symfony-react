@@ -19,7 +19,9 @@ security:
             json_login:
                 # Here authentication will happen (token generation)
                 check_path: /api/login_check
+                # Handle successfull authentication
                 success_handler: lexik_jwt_authentication.handler.authentication_success
+                # Handle authentication failure (invalid credentials, no credentials etc).
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard: 
                 authenticators:
@@ -39,4 +41,4 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { PATH: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
